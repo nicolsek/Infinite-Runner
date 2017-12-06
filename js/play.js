@@ -4,6 +4,9 @@ var platforms;
 var player;
 var obstacles;
 
+var playerGround;
+var playerObstacle;
+
 var play = {
     create : function() {
         
@@ -19,14 +22,16 @@ var play = {
     
         /* Obstacle group */
         obstacles = game.add.group();
-    
+
+        //obstacles.body.debug = true;
+
         /* Ground stuff */
         var ground = platforms.create(0, game.world.height - 64, 'ground');
         ground.scale.setTo(2, 1.5);
         ground.body.immovable = true;
     
         /* Player stuff */
-        player = game.add.sprite(32, game.world.height - 400, 'player');
+        player = game.add.sprite(64, game.world.height - 180, 'player');
         player.scale.setTo(2/8, 2/8);
     
         game.physics.arcade.enable(player);
@@ -51,10 +56,17 @@ var play = {
     },
 
     update : function() {
-        var playerGround = game.physics.arcade.collide(player, platforms);
-        var playerObstacle = game.physics.arcade.collide(player, obstacles);        
+        playerGround = game.physics.arcade.collide(player, platforms);
+        playerObstacle = game.physics.arcade.collide(player, obstacles, obstacleInteract, function() {return false;}, this);        
     }
 };
+
+/**
+ * @desc Interact with player.
+ */
+function obstacleInteract() {
+
+}
 
 /**
  * @desc OnTap event.
@@ -62,26 +74,28 @@ var play = {
  * @param {bool} doubleTap 
  */
 function onTap(pointer, doubleTap) {
-    player.animations.play('jump', 30);
-    player.body.velocity.y -= 200;
+    if (playerGround) {
+        player.animations.play('jump', 29.5);
+        player.body.velocity.y -= 200;
 
-    addObstacle(game.world.width, game.world.height - 140);
+        addObstacle(game.world.width, game.world.height - 140);
 
-    player.animations.currentAnim.onComplete.add(function () {
-        player.animations.play('run', 60);
-    });
+        player.animations.currentAnim.onComplete.add(function () {
+            player.animations.play('run', 60);
+        });
+    }
 }
 
 /**
  * @desc Add obstacle.
  */
 function addObstacle(x, y) {
-    var obstacle = game.add.sprite(x, y, 'obstacle')
+    var obstacle = game.add.sprite(x, y, 'obstacle', false)
     
     obstacles.add(obstacle);
     game.physics.arcade.enable(obstacle);
     
-    obstacle.body.velocity.x = -200;
+    obstacle.body.velocity.x = -400;
     
     obstacle.checkWorldBounds = true;
     obstacle.outOfBoundsKill = true;
