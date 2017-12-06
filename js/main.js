@@ -49,10 +49,10 @@ function create() {
     game.physics.arcade.enable(player);
     
     player.body.enable = true;
-    player.body.gravity.y = 50;
+    player.body.gravity.y = 300;
     player.body.collideWorldBounds = true;
     
-    player.body.setSize(260, 400, 100, 40);
+    player.body.setSize(260, 400, 100, 40); //Correc tsize.
 
     player.animations.add('death', Phaser.Animation.generateFrameNames('Death (', 1, 30, ")"), 0, false);
     player.animations.add('jump', Phaser.Animation.generateFrameNames('Jump (', 1, 30, ")"), 0, false);
@@ -71,8 +71,6 @@ function create() {
  * @desc Update the game and do the game process stuff.
  */
 function update() {
-    game.debug.body(player);
-    game.debug.body(platforms);
 
     var playerGround = game.physics.arcade.collide(player, platforms);
 }
@@ -83,8 +81,8 @@ function update() {
  * @param {bool} doubleTap 
  */
 function onTap(pointer, doubleTap) {
-    player.animations.play('jump', 60);
-    player.body.velocity.y += 100;
+    player.animations.play('jump', 30);
+    player.body.velocity.y -= 200;
 
     player.animations.currentAnim.onComplete.add(function () {
         player.animations.play('run', 60);
