@@ -40,7 +40,7 @@ function create() {
     console.log(player);
     game.physics.arcade.enable(player);    
     player.body.bounce.y = 0;
-    player.body.gravity.y = 300;
+    player.body.gravity.y = 600;
     player.body.collideWorldBounds = true;
 
     stars = game.add.group();
@@ -48,7 +48,7 @@ function create() {
 
     for (var starPos = 0; starPos < 12; starPos++) {
         var star = stars.create(starPos * 70, 0, 'star');
-        star.body.gravity.y = 6;
+        star.body.gravity.y = 600;
         star.body.bounce.y = .7 + Math.random() * .2;
     }
 
@@ -72,13 +72,13 @@ function update() {
     player.body.velocity.x = 0;
     
         if (cursors.left.isDown) {
-            player.body.velocity.x = -150;
+            player.body.velocity.x = -300;
     
             player.animations.play('left');
         }
 
         else if (cursors.right.isDown) {
-            player.body.velocity.x = 150;
+            player.body.velocity.x = 300;
     
             player.animations.play('right');
         }
@@ -90,7 +90,7 @@ function update() {
         }
     
         if (cursors.up.isDown && player.body.touching.down && playerPlatform) {
-            player.body.velocity.y = -350;
+            player.body.velocity.y = -450;
         }
 }
 
