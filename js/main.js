@@ -35,16 +35,24 @@ function create() {
     platforms.enableBody = true;
 
     /* Obstacle group */
-    obstacles = game.add.group();
+    //obstacles = game.add.group();
 
     /* Ground stuff */
-    var ground = platforms.create(0, game.world.height - 32, 'ground');
-    ground.scale.setTo(2, 2);
+    var ground = platforms.create(0, game.world.height - 64, 'ground');
+    ground.scale.setTo(2, 1.5);
     ground.body.immovable = true;
 
     /* Player stuff */
-    player = game.add.sprite(32, game.world.height - 150, 'player');
+    player = game.add.sprite(32, game.world.height - 400, 'player');
     player.scale.setTo(2/8, 2/8);
+
+    game.physics.arcade.enable(player);
+    
+    player.body.enable = true;
+    player.body.gravity.y = 50;
+    player.body.collideWorldBounds = true;
+    
+    player.body.setSize(260, 400, 100, 40);
 
     player.animations.add('death', Phaser.Animation.generateFrameNames('Death (', 1, 30, ")"), 0, false);
     player.animations.add('jump', Phaser.Animation.generateFrameNames('Jump (', 1, 30, ")"), 0, false);
@@ -63,7 +71,10 @@ function create() {
  * @desc Update the game and do the game process stuff.
  */
 function update() {
-    var playerPlatform = game.physics.arcade.collide(player, platforms);
+    game.debug.body(player);
+    game.debug.body(platforms);
+
+    var playerGround = game.physics.arcade.collide(player, platforms);
 }
 
 /**
@@ -72,7 +83,9 @@ function update() {
  * @param {bool} doubleTap 
  */
 function onTap(pointer, doubleTap) {
-    player.animations.play('jump', 40);
+    player.animations.play('jump', 60);
+    player.body.velocity.y += 100;
+
     player.animations.currentAnim.onComplete.add(function () {
         player.animations.play('run', 60);
     });
