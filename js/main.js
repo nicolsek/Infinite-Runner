@@ -47,11 +47,13 @@ function create() {
     player.scale.setTo(2/8, 2/8);
 
     player.animations.add('death', Phaser.Animation.generateFrameNames('Death (', 1, 30, ")"), 0, false);
+    player.animations.add('jump', Phaser.Animation.generateFrameNames('Jump (', 1, 30, ")"), 0, false);
+    
     player.animations.add('idle', Phaser.Animation.generateFrameNames('Idle (', 1, 16, ")"), 0, true);
     player.animations.add('run', Phaser.Animation.generateFrameNames('Run (', 1, 20, ")"), 0, true);
     player.animations.add('walk', Phaser.Animation.generateFrameNames('Walk (', 1, 20, ")"), 0, true);
 
-    player.animations.play('run', 60);    
+    player.animations.play('run', 60); //Play starting off.
 
     /* Score */
     //scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000'});
@@ -70,7 +72,10 @@ function update() {
  * @param {bool} doubleTap 
  */
 function onTap(pointer, doubleTap) {
-
+    player.animations.play('jump', 40);
+    player.animations.currentAnim.onComplete.add(function () {
+        player.animations.play('run', 60);
+    });
 }
 
 /**
