@@ -13,12 +13,13 @@ function boot() {
 function preload() {
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
-
+    game.load.image('obstacle', 'assets/obstacle.png');
     game.load.atlas('player', 'assets/sprites/spriteatlas.png', 'assets/sprites/spriteatlas.json'); //Spriteatlas.
 }
 
 var platforms;
 var player;
+var obstaclesñ
 
 /**
  * @desc Create all the stuff needed for the game.
@@ -35,7 +36,7 @@ function create() {
     platforms.enableBody = true;
 
     /* Obstacle group */
-    //obstacles = game.add.group();
+    obstacles = game.add.group();
 
     /* Ground stuff */
     var ground = platforms.create(0, game.world.height - 64, 'ground');
@@ -83,6 +84,8 @@ function update() {
 function onTap(pointer, doubleTap) {
     player.animations.play('jump', 30);
     player.body.velocity.y -= 200;
+
+    addObstacle(game.world.width, game.world.height - 140);
 
     player.animations.currentAnim.onComplete.add(function () {
         player.animations.play('run', 60);
