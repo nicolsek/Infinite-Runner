@@ -1,4 +1,11 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(800, 400, Phaser.AUTO, '', { boot: boot, preload: preload, create: create, update: update });
+
+/**
+ * @desc Loading screen.
+ */
+function boot() {
+    
+}
 
 /**
  * @desc Preload all the resources.
@@ -6,59 +13,48 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 function preload() {
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
 
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    game.load.atlas('player', 'assets/sprites/spriteatlas.png', 'assets/sprites/spriteatlas.json'); //Spriteatlas.
 }
 
 var platforms;
 var player;
-var cursors;
-var stars;
-var score = 0;
-var scoreText = "";
 
 /**
  * @desc Create all the stuff needed for the game.
  */
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE); //Arcade Physics.
+    game.input.onTap.add(onTap, this);
     
+    /* Sprites for backgrounds */
     game.add.sprite(0, 0, 'sky');
 
+    /* Platform group */
     platforms = game.add.group();
     platforms.enableBody = true;
 
-    var ground = platforms.create(0, game.world.height - 64, 'ground');
+    /* Obstacle group */
+    obstacles = game.add.group();
+
+    /* Ground stuff */
+    var ground = platforms.create(0, game.world.height - 32, 'ground');
     ground.scale.setTo(2, 2);
     ground.body.immovable = true;
 
-    var ledge = platforms.create(400, 400, 'ground');
-    ledge.body.immovable = true;
+    /* Player stuff */
+    player = game.add.sprite(32, game.world.height - 150, 'player');
+    player.scale.setTo(2/8, 2/8);
 
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
-    console.log(player);
-    game.physics.arcade.enable(player);    
-    player.body.bounce.y = 0;
-    player.body.gravity.y = 600;
-    player.body.collideWorldBounds = true;
+    player.animations.add('death', Phaser.Animation.generateFrameNames('Death (', 1, 30, ")"), 0, false);
+    player.animations.add('idle', Phaser.Animation.generateFrameNames('Idle (', 1, 16, ")"), 0, true);
+    player.animations.add('run', Phaser.Animation.generateFrameNames('Run (', 1, 20, ")"), 0, true);
+    player.animations.add('walk', Phaser.Animation.generateFrameNames('Walk (', 1, 20, ")"), 0, true);
 
-    stars = game.add.group();
-    stars.enableBody = true;
+    player.animations.play('run', 60);    
 
-    for (var starPos = 0; starPos < 12; starPos++) {
-        var star = stars.create(starPos * 70, 0, 'star');
-        star.body.gravity.y = 600;
-        star.body.bounce.y = .7 + Math.random() * .2;
-    }
-
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
-
-    cursors = game.input.keyboard.addKeys({ 'up' : Phaser.KeyCode.W, 'down': Phaser.KeyCode.S, 'left' : Phaser.KeyCode.A, 'right' : Phaser.KeyCode.D });    
-    //cursors = game.input.keyboard.createCursorKeys();
-
-    scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000'});
+    /* Score */
+    //scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000'});
 }
 
 /**
@@ -66,38 +62,28 @@ function create() {
  */
 function update() {
     var playerPlatform = game.physics.arcade.collide(player, platforms);
-    var starPlatform = game.physics.arcade.collide(stars, platforms);
-    var starPlayer = game.physics.arcade.collide(player, stars, collectStar, null, this);
-
-    player.body.velocity.x = 0;
-    
-        if (cursors.left.isDown) {
-            player.body.velocity.x = -300;
-    
-            player.animations.play('left');
-        }
-
-        else if (cursors.right.isDown) {
-            player.body.velocity.x = 300;
-    
-            player.animations.play('right');
-        }
-        
-        else {
-            player.animations.stop();
-    
-            player.frame = 4;
-        }
-    
-        if (cursors.up.isDown && player.body.touching.down && playerPlatform) {
-            player.body.velocity.y = -450;
-        }
 }
 
 /**
- * @desc Collect the star! Do it! 
+ * @desc OnTap event.
+ * @param {pointer} pointer 
+ * @param {bool} doubleTap 
  */
-function collectStar (player, star) {
-    star.kill();
-    scoreText.text = 'Score: ' + (score += 10);
+function onTap(pointer, doubleTap) {
+
+}
+
+/**
+ * @desc Add obstacle.
+ */
+function addObstacle(x, y) {
+    var obstacle = game.add.sprite(x, y, 'obstacle')
+    
+    obstacles.add(obstacle);
+    game.physics.arcade.enable(obstacle);
+    
+    obstacle.body.velocity.x = -200;
+    
+    obstacle.checkWorldBounds = true;
+    obstacle.outOfBoundsKill = true;
 }
